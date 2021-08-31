@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
 import * as BigCommerce from 'node-bigcommerce';
+
 import { QueryParams, SessionContextProps, SessionProps } from '../types';
 import db from './db';
 
@@ -37,8 +38,8 @@ export function getBCAuth(query: QueryParams) {
     return bigcommerce.authorize(query);
 }
 // Verifies app on load/ uninstall
-export function getBCVerify({ signed_payload }: QueryParams) {
-    return bigcommerceSigned.verify(signed_payload);
+export function getBCVerify({ signed_payload_jwt }: QueryParams) {
+  return bigcommerceSigned.verifyJWT(signed_payload_jwt);
 }
 
 export function setSession(session: SessionProps) {
@@ -64,7 +65,8 @@ export async function getSession({ query: { context = '' } }: NextApiRequest) {
 
 // JWT functions to sign/ verify 'context' query param from /api/auth||load
 export function encodePayload({ user, owner, ...session }: SessionProps) {
-    const context = session?.context?.split('/')[1] || '';
+    const contextString = session?.context ?? session?.sub;
+    const context = contextString.split('/')[1] || '';
 
     return jwt.sign({ context, user, owner }, JWT_KEY, { expiresIn: '24h' });
 }

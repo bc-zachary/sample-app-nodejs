@@ -2,7 +2,9 @@ import { Box, GlobalStyles } from '@bigcommerce/big-design';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+
 import Header from '../components/header';
+import { AlertsProvider } from '../context/alerts';
 import SessionProvider from '../context/session';
 import { bigCommerceSDK } from '../scripts/bcSdk';
 
@@ -18,10 +20,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     return (
         <>
             <GlobalStyles />
-            <Box marginHorizontal="xxxLarge" marginVertical="xxLarge">
-                <Header />
+            <Box marginTop="none" marginBottom="xxLarge">
                 <SessionProvider>
-                    <Component {...pageProps} />
+                    <AlertsProvider>
+                        <Header />
+                        <Component {...pageProps} />
+                    </AlertsProvider>
                 </SessionProvider>
             </Box>
         </>

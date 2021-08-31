@@ -1,24 +1,46 @@
 import { Box, Flex, H1, H4, Panel } from '@bigcommerce/big-design';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
+
 import ErrorMessage from '../components/error';
 import Loading from '../components/loading';
 import { useSession } from '../context/session';
-import { useProducts } from '../lib/hooks';
+import { useAlerts, useProducts } from '../lib/hooks';
 
 const Index = ({ context }: { context: string }) => {
     const { error, isLoading, summary } = useProducts();
-    const { setContext } = useSession();
+    const { setContext, isUpgrade } = useSession();
+    const router = useRouter();
+    const alertsManager = useAlerts();
+
+    const upgrade = router.query.upgrade;
 
     useEffect(() => {
         if (context) setContext(context);
-    }, [context, setContext]);
+        if (isUpgrade) {
+            alertsManager.add({
+                header: `Plus Plan Active`,
+                messages: [
+                    {
+                        text: 'You can now enjoy unlimited access to BigApp. Take app tour',
+                        link: {
+                            text: 'Take app tour',
+                            href: '#',
+                        }
+                    },
+                ],
+                type: 'success',
+                autoDismiss: true,
+            });
+        }
+    }, [context, setContext, upgrade, isUpgrade, alertsManager]);
 
     if (isLoading) return <Loading />;
     if (error) return <ErrorMessage error={error} />;
 
     return (
-        <Panel header="Homepage">
+        <Panel header="Homepage" marginHorizontal="xxxLarge">
             <Flex>
                 <StyledBox border="box" borderRadius="normal" marginRight="xLarge" padding="medium">
                     <H4>Inventory count</H4>

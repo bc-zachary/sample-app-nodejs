@@ -1,4 +1,7 @@
+import { useContext, useMemo } from 'react';
 import useSWR from 'swr';
+
+import { AlertsContext } from '../context/alerts';
 import { useSession } from '../context/session';
 import { ErrorProps, ListItem } from '../types';
 
@@ -15,6 +18,22 @@ async function fetcher(url: string, encodedContext: string) {
 
     return res.json();
 }
+
+export const useAlerts = () => {
+    const alertsContext = useContext(AlertsContext);
+
+    if (!alertsContext) {
+        throw new Error('useAlerts must be used within an <AlertsProvider>');
+    }
+
+    return useMemo(
+        () => ({
+            add: alertsContext.add,
+            remove: alertsContext.remove,
+        }),
+        [alertsContext],
+    );
+};
 
 // Reusable SWR hooks
 // https://swr.vercel.app/

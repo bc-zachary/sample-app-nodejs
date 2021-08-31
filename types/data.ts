@@ -1,6 +1,10 @@
 export interface ContextValues {
   context: string;
   setContext: (key: string) => void;
+  isUpgrade: boolean;
+  setIsUpgrade: (flag: boolean) => void;
+  plan: string;
+  setPlan: (key: string) => void;
 }
 
 export interface FormData {
